@@ -39,7 +39,7 @@ import { VisualSettings } from "./settings";
 import { utcFormat } from "d3";
 export class Visual implements IVisual {
   private TOKEN_ENDPOINT = "https://localhost:44348/token";
-  private DOCUMENT_URN = "urn:adsk.objects:os.object:demo-powerbi-report/box.ipt";
+  private DOCUMENT_URN = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGVtby1wb3dlcmJpLXJlcG9ydC9ib3guaXB0";
 
   private target: HTMLElement;
   private updateCount: number;
@@ -64,37 +64,47 @@ export class Visual implements IVisual {
   }
 
   private async initForgeViewer(): Promise<void> {
-    let token = await this.getToken();
+    let token = await this.getToken()
+    let options = {
+      env: 'AutodeskProduction',
+      accessToken: token
+    } 
     await this.loadScriptAndStyle();
+    
+    Autodesk.Viewing.Initializer(options, () => {
+      this.forge_viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById("forge-viewer"));
+      this.forge_viewer.start();
 
-    Autodesk.Viewing.Document.load(
-      this.DOCUMENT_URN,
-      (doc) => {
-        var viewables: Autodesk.Viewing.BubbleNode = doc
-          .getRoot()
-          .getDefaultGeometry();
-        this.forge_viewer.loadDocumentNode(doc, viewables, {}).then((i) => {
-          this.forge_viewer.addEventListener(
-            Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
-            (res) => {
-              this.forge_viewer.getObjectTree((tree) => {
-                var leaves = [];
-                tree.enumNodeChildren(
-                  tree.getRootId(),
-                  (dbId) => {
-                    if (tree.getChildCount(dbId) === 0) {
-                      leaves.push(dbId);
-                    }
-                  },
-                  true
-                );
-              });
-            }
-          );
-        });
-      },
-      (err) => console.error(err)
-    );
+      Autodesk.Viewing.Document.load(
+        this.DOCUMENT_URN,
+        (doc) => {
+          var viewables: Autodesk.Viewing.BubbleNode = doc
+            .getRoot()
+            .getDefaultGeometry();
+          this.forge_viewer.loadDocumentNode(doc, viewables, {}).then((i) => {
+            this.forge_viewer.addEventListener(
+              Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
+              (res) => {
+                this.forge_viewer.getObjectTree((tree) => {
+                  var leaves = [];
+                  tree.enumNodeChildren(
+                    tree.getRootId(),
+                    (dbId) => {
+                      if (tree.getChildCount(dbId) === 0) {
+                        leaves.push(dbId);
+                      }
+                    },
+                    true
+                  );
+                });
+              }
+            );
+          });
+        },
+        (err) => console.error(err)
+      );
+
+    })
   }
 
   private async loadScriptAndStyle(): Promise<void> {
