@@ -39,7 +39,7 @@ import { VisualSettings } from "./settings";
 import { utcFormat } from "d3";
 export class Visual implements IVisual {
   private TOKEN_ENDPOINT = "https://localhost:44348/token";
-  private DOCUMENT_URN = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGVtby1wb3dlcmJpLXJlcG9ydC9ib3guaXB0";
+  private DOCUMENT_URN = "urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGVtby1wb3dlcmJpLXJlcG9ydC9ib3guaXB0";
 
   private target: HTMLElement;
   private updateCount: number;
@@ -60,7 +60,7 @@ export class Visual implements IVisual {
     await fetch(this.TOKEN_ENDPOINT)
       .then((res) => res.json())
       .then((data) => (token = data));
-    return `${token.tokenType} ${token.accessToken}`;
+    return token.accessToken;
   }
 
   private async initForgeViewer(): Promise<void> {
@@ -100,8 +100,7 @@ export class Visual implements IVisual {
               }
             );
           });
-        },
-        (err) => console.error(err)
+        }, () => {}
       );
 
     })
