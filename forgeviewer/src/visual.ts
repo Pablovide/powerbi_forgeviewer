@@ -155,7 +155,6 @@ export class Visual implements IVisual {
     );
 
     console.log(dbIds)
-    this.forge_viewer.select([193677])
 
     this.forge_viewer.showAll();
     this.forge_viewer.setGhosting(true);

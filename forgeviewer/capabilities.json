@@ -1,20 +1,25 @@
 {
   "dataRoles": [
     {
-      "displayName": "Data",
-      "name": "data",
-      "kind": "GroupingOrMeasure"
+      "displayName": "Id",
+      "name": "id",
+      "kind": "Grouping"
+    },
+    {
+      "displayName": "Prop",
+      "name": "prop",
+      "kind": "Grouping"
     }
   ],
   "dataViewMappings": [
     {
-        "table": {
-            "rows": {
-                "for": {
-                    "in": "data"
-                }
-            }
+      "table": {
+        "rows": {
+          "for": {
+            "in": "id"
+          }
         }
+      }
     }
   ]
 }
