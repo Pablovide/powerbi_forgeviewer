@@ -39,18 +39,16 @@ import { VisualSettings } from "./settings";
 import { utcFormat } from "d3";
 export class Visual implements IVisual {
   private TOKEN_ENDPOINT = "https://localhost:44348/token";
-  private DOCUMENT_URN = "urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGVtby1wb3dlcmJpLXJlcG9ydC9ib3guaXB0";
+  private DOCUMENT_URN =
+    "urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGVtby1wb3dlcmJpLXJlcG9ydC8zJTIwU3RvcnklMjBCdWlsZGluZyUyME1vZGVsLnJ2dA==";
 
   private target: HTMLElement;
-  private updateCount: number;
   private settings: VisualSettings;
-  private textNode: Text;
   private forge_viewer: Autodesk.Viewing.GuiViewer3D = null;
 
   constructor(options: VisualConstructorOptions) {
     console.log("Visual constructor", options);
     this.target = options.element;
-    this.updateCount = 0;
     this.target.innerHTML = '<div id="forge-viewer"></div>';
     this.initForgeViewer();
   }
@@ -64,15 +62,17 @@ export class Visual implements IVisual {
   }
 
   private async initForgeViewer(): Promise<void> {
-    let token = await this.getToken()
+    let token = await this.getToken();
     let options = {
-      env: 'AutodeskProduction',
-      accessToken: token
-    } 
+      env: "AutodeskProduction",
+      accessToken: token,
+    };
     await this.loadScriptAndStyle();
-    
+
     Autodesk.Viewing.Initializer(options, () => {
-      this.forge_viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById("forge-viewer"));
+      this.forge_viewer = new Autodesk.Viewing.GuiViewer3D(
+        document.getElementById("forge-viewer")
+      );
       this.forge_viewer.start();
 
       Autodesk.Viewing.Document.load(
@@ -100,14 +100,14 @@ export class Visual implements IVisual {
               }
             );
           });
-        }, () => {}
+        },
+        () => {}
       );
-
-    })
+    });
   }
 
   private async loadScriptAndStyle(): Promise<void> {
-    return new Promise<void>((reslove, reject) => {
+    return new Promise<void>((resolve, reject) => {
       let forgeviewerjs = document.createElement("script");
       forgeviewerjs.src =
         "https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.js";
@@ -116,7 +116,8 @@ export class Visual implements IVisual {
       document.body.appendChild(forgeviewerjs);
 
       forgeviewerjs.onload = () => {
-        console.info("Viewer scripts loaded");
+        console.log("script loaded");
+
         let link = document.createElement("link");
         link.rel = "stylesheet";
         link.href =
@@ -124,9 +125,8 @@ export class Visual implements IVisual {
         link.type = "text/css";
         link.id = "forgeviewercss";
         document.body.appendChild(link);
-        console.info("Viewer CSS loaded");
-
-        reslove();
+        console.log("style loaded");
+        resolve();
       };
 
       forgeviewerjs.onerror = (err) => {
@@ -137,16 +137,30 @@ export class Visual implements IVisual {
   }
 
   public update(options: VisualUpdateOptions) {
+    console.log('updating....')
+
+
+    if(options.type == 2) {
+
+      debugger; 
+      console.log('this is a data update')
+    }
+
     if (!this.forge_viewer) return;
 
+    console.log(options)
 
-    const dbIds = options.dataViews[0].table.rows.map(r => 
-        <number>r[0].valueOf()
+    const dbIds = options.dataViews[0].table.rows.map(
+      (r) => <number>r[0].valueOf()
     );
+
+    console.log(dbIds)
+    this.forge_viewer.select([193677])
 
     this.forge_viewer.showAll();
     this.forge_viewer.setGhosting(true);
-    this.forge_viewer.isolate(dbIds)
+    this.forge_viewer.isolate(dbIds);
+    console.log('updated')
   }
 
   private static parseSettings(dataView: DataView): VisualSettings {
