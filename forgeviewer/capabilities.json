@@ -1,4 +1,17 @@
 {
+  "objects": {
+    "general": {
+      "displayName": "general",
+      "displayNameKey": "formattingGeneral",
+      "properties": {
+        "filter": {
+          "type": {
+            "filter": true
+          }
+        }
+      }
+    }
+  },
   "dataRoles": [
     {
       "displayName": "Id",
