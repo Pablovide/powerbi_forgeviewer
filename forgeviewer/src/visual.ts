@@ -34,15 +34,8 @@ import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInst
 import VisualObjectInstance = powerbi.VisualObjectInstance;
 import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
-import ISelectionManager = powerbi.extensibility.ISelectionManager;
-import IVisualHost = powerbi.extensibility.visual.IVisualHost;
-import ISelectionIdBuilder = powerbi.extensibility.ISelectionIdBuilder;
-import ISelectionId = powerbi.extensibility.ISelectionId;
-import DataViewTableRow = powerbi.DataViewTableRow;
-import FilterAction = powerbi.FilterAction;
 
 import { VisualSettings } from "./settings";
-import { BasicFilter, IBasicFilter, IFilterColumnTarget, IFilterTarget } from "powerbi-models";
 export class Visual implements IVisual {
   private TOKEN_ENDPOINT = "https://localhost:44348/token";
   private DOCUMENT_URN =
@@ -51,12 +44,8 @@ export class Visual implements IVisual {
   private target: HTMLElement;
   private settings: VisualSettings;
   private forge_viewer: Autodesk.Viewing.GuiViewer3D = null;
-  private host: IVisualHost;
-  private selectionManager: ISelectionManager;
 
   constructor(options: VisualConstructorOptions) {
-    this.host = options.host;
-    this.selectionManager = this.host.createSelectionManager();
     console.log("Visual constructor", options);
     this.target = options.element;
     this.target.innerHTML = '<div id="forge-viewer"></div>';
@@ -95,7 +84,6 @@ export class Visual implements IVisual {
         },
         () => {}
       );
-
     });
   }
 
@@ -132,9 +120,7 @@ export class Visual implements IVisual {
   public update(options: VisualUpdateOptions) {
     const dataView = options.dataViews[0];
     console.log("updating....");
-    debugger
     if (options.type == 2) {
-      debugger;
       console.log("this is a data update");
       if (!this.forge_viewer) return;
 
@@ -161,5 +147,4 @@ export class Visual implements IVisual {
       options
     );
   }
- 
 }
